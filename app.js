@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 const jwt = require('jsonwebtoken')
+const cors = require('cors')
 
 // Mongoose setup
 const mongoose = require('mongoose')
@@ -25,6 +26,15 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+// Enable CORS
+app.use(cors())
+
+// Enable CORS for a specific origin
+// const corsOptions = {
+//   origin: 'https://example.com'
+// }
+// app.use(cors(corsOptions))
 
 app.use(logger('dev'));
 app.use(express.json());
