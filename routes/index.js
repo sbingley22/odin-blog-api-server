@@ -4,11 +4,12 @@ var router = express.Router();
 const Blog = require('../models/blog')
 
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.redirect("blogs")
 });
 
-router.get('/blogs', (req, res, next) => {
-
+router.get('/blogs', async (req, res, next) => {
+  const blogs = await Blog.find().exec()
+  res.send(blogs)
 })
 
 module.exports = router;
