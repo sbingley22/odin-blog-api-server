@@ -29,22 +29,29 @@ router.get('/', authenticateToken, function(req, res, next) {
   }
 });
 
+router.get('/dashboard', authenticateToken, function(req, res, next) {
+  if (req.user != null) {
+    res.json(`Welcome, ${req.user.username}!`);
+  }
+  else {
+    return res.status(400).json({ error: "Cannot authenticate token" });
+  }
+});
+
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
+  console.log( username )
   try {
     const user = await User.findOne({username: username}).exec();
     if (user) {
-      console.log(user.password)
       const match = await bcrypt.compare(password, user.password);
-      console.log(match)
       if (!match) {
-        res.send('Password incorrect')
-        return
+        return res.status(400).json({ error: "Password incorrect" });
       }
       const accessToken = jwt.sign({ username: user.username }, process.env.ACCESS_TOKEN_SECRET);
       res.json({ accessToken: accessToken });
     } else {
-      res.send('Username incorrect');
+      return res.status(400).json({ error: "User incorrect" });
     }
   } catch (err) {
     console.log("Error finding user in database or comparing password", err)
