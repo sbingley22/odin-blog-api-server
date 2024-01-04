@@ -4,12 +4,14 @@ var router = express.Router();
 const Blog = require('../models/blog')
 const Comment = require('../models/comment')
 
+const { body, validationResult } = require("express-validator");
+//const asyncHandler = require("express-async-handler");
+
 router.get('/', function(req, res, next) {
   res.redirect("blogs")
 });
 
 router.get('/blogs/:blogid', async (req, res, next) => {
-  console.log("Route: /blogs/:blogid")
   const blogid = req.params.blogid
   const blog = await Blog.findById(blogid).exec()
 
@@ -27,8 +29,49 @@ router.get('/blogs/:blogid', async (req, res, next) => {
   res.json(responseData)
 })
 
+router.post('/blogs/:blogid', [
+  // Validate and sanitize fields
+  body("name", "Name must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("comment", "Comment must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+
+  async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Comment object with escaped and trimmed data.
+    const comment = new Comment({
+      blog: req.params.blogid,
+      name: req.body.name,
+      content: req.body.comment,
+      date: Date.now(),
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+      console.log("comment invalid")
+      console.log(errors.array())
+      return res.status(400).json({ error: "Validation failed", details: errors.array() });
+    }
+
+    // Data from form is valid. Save comment.
+    try {
+      await comment.save();
+      res.status(201).json({ message: "Comment saved successfully" });
+    } catch (err) {
+      // Handle other errors
+      console.error('Error saving comment:', err);
+      res.status(500).json({ error: "Internal server error" });
+    }    
+  }
+])
+
 router.get('/blogs', async (req, res, next) => {
-  console.log("Route: /blogs")
   const blogs = await Blog.find().exec()
   res.json(blogs.map(blog => blog.toJSON({ virtuals: true })));
 })

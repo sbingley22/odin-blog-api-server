@@ -12,8 +12,6 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 mongoose.set("strictQuery", false)
 const mongoDB = process.env.MONGODB_URI
-//console.log(process.env.ACCESS_TOKEN_SECRET)
-//console.log(mongoDB)
 // Try connecting
 main().catch((err) => console.log(err));
 async function main() {
