@@ -5,7 +5,8 @@ const { DateTime } = require("luxon")
 const BlogSchema = new Schema({
   title: { type: String, required: true },
   date: { type: Date, default: Date.now },
-  content: { type: String }
+  content: { type: String },
+  published: { type: Boolean }
 })
 
 BlogSchema.virtual("url").get(function () {

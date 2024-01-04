@@ -72,7 +72,7 @@ router.post('/blogs/:blogid', [
 ])
 
 router.get('/blogs', async (req, res, next) => {
-  const blogs = await Blog.find().exec()
+  const blogs = await Blog.find({ published: true }).exec()
   res.json(blogs.map(blog => blog.toJSON({ virtuals: true })));
 })
 
