@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+const Blog = require('../models/blog')
+const Comment = require('../models/comment')
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
 const User = require("../models/user")
@@ -29,14 +32,99 @@ router.get('/', authenticateToken, function(req, res, next) {
   }
 });
 
-router.get('/dashboard', authenticateToken, function(req, res, next) {
+router.get('/dashboard', authenticateToken, async function(req, res, next) {
   if (req.user != null) {
-    res.json(`Welcome, ${req.user.username}!`);
+    // user is authenticated, send data
+    const welcome = `Welcome, ${req.user.username}!`
+    const blogs = await Blog.find().exec()
+
+    return res.json({
+      welcome,
+      blogs,
+    });
   }
   else {
     return res.status(400).json({ error: "Cannot authenticate token" });
   }
 });
+
+router.post('/dashboard/:blogid', authenticateToken, async function(req, res, next) {
+  if (req.user != null) {
+    // update the blog with blogid
+    console.log(req.params.blogid)
+    try {
+      const updatedBlog = await Blog.findByIdAndUpdate(
+        req.params.blogid,
+        { published: req.body.published },
+        { new: true }
+      );
+      res.json({ msg: "updated" });
+    } catch (err) {
+      res.status(404).send({ error: "Blog doesn't exist!" });
+    }
+  }
+  else {
+    return res.status(400).json({ error: "Cannot authenticate token" })
+  }
+})
+
+router.get('/dashboard/:blogid/comments', authenticateToken, async function(req, res, next) {
+  if (req.user != null) {
+    // display all comments for the blog
+    try {
+      const comments = await Comment.find({blog: req.params.blogid}).exec()
+      res.json(comments)
+    } catch (err) {
+      res.status(404).send({ error: "Blog doesn't exist!" });
+    }
+  }
+  else {
+    return res.status(400).json({ error: "Cannot authenticate token" })
+  }
+})
+
+router.delete('/dashboard/:blogid/comments/:commentid', authenticateToken, async function(req, res, next) {
+  if (req.user != null) {
+    try {
+      await Comment.findByIdAndDelete(req.params.commentid);
+      res.json("comment deleted")
+      return
+    } catch (err) {
+      res.status(404).send({ error: "Comment doesn't exist" })
+    }
+  } else {
+    return res.status(400).json({ error: "Cannot authenticate token" })
+  }
+})
+
+router.post('/newblog', authenticateToken, async function(req, res, next) {
+  console.log("newblog route")
+  if (req.user != null) {
+    try {
+      const blog = new Blog({
+        title: req.body.title,
+        date: Date.now(),
+        content: req.body.content,
+        published: false
+      })
+
+      console.log(blog)
+
+      if (blog.title == '' || blog.content == ''){
+        return res.status(400).json({ error: "Both title and content must not be empty" })
+      }
+
+      await blog.save()
+      return res.json("Blog saved")
+
+    } catch (err) {
+      console.error('Error saving blog:', err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  } else {
+    return res.status(400).json({ error: "Cannot authenticate token" })
+  }
+})
 
 router.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
