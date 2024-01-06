@@ -8,15 +8,17 @@ const { body, validationResult } = require("express-validator");
 //const asyncHandler = require("express-async-handler");
 
 router.get('/', async function(req, res, next) {
+  console.log("Showing test page")
   try {
     const blogs = await Blog.find().exec()
-    
+    console.log (blogs)
     res.render("index", {
       title: "Server main page",
       blogs: blogs
     })
   } catch (err) {
     console.error(err)
+    console.log("Failed to load blogs")
     res.status(500)
   }
 });
