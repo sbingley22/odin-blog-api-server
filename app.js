@@ -8,13 +8,13 @@ var logger = require('morgan');
 const cors = require('cors')
 
 // Mongoose setup
+console.log("connection string: " + mongoDB)
 const mongoose = require('mongoose')
 mongoose.set("strictQuery", false)
 const mongoDB = process.env.MONGODB_URI
 // Try connecting
 main().catch((err) => {
   console.log(err)
-  console.log("connection string: " + mongoDB)
 });
 async function main() {
   await mongoose.connect(mongoDB);
