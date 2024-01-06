@@ -7,9 +7,12 @@ const Comment = require('../models/comment')
 const { body, validationResult } = require("express-validator");
 //const asyncHandler = require("express-async-handler");
 
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
+  const blogs = await Blog.find({ published: true }).exec()
+  //res.json(blogs.map(blog => blog.toJSON({ virtuals: true })));
   res.render(index.ejs, {
-    title: "Server main page"
+    title: "Server main page",
+    blogs: blogs
   })
 });
 
