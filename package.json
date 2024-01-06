@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
-    "debug": "SET DEBUG=server:* & npm start"
+    "server": "SET DEBUG=server:* & npm start"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

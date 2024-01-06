@@ -5,7 +5,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-const jwt = require('jsonwebtoken')
 const cors = require('cors')
 
 // Mongoose setup
