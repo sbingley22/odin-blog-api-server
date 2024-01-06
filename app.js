@@ -8,7 +8,7 @@ var logger = require('morgan');
 const cors = require('cors')
 
 // Mongoose setup
-console.log("connection string: " + mongoDB)
+console.log("connection string: " + process.env.MONGODB_URI)
 const mongoose = require('mongoose')
 mongoose.set("strictQuery", false)
 const mongoDB = process.env.MONGODB_URI
