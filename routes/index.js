@@ -10,7 +10,7 @@ const { body, validationResult } = require("express-validator");
 router.get('/', async function(req, res, next) {
   const blogs = await Blog.find({ published: true }).exec()
   //res.json(blogs.map(blog => blog.toJSON({ virtuals: true })));
-  res.render(index.ejs, {
+  res.render("index", {
     title: "Server main page",
     blogs: blogs
   })
