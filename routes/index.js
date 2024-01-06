@@ -8,7 +8,9 @@ const { body, validationResult } = require("express-validator");
 //const asyncHandler = require("express-async-handler");
 
 router.get('/', function(req, res, next) {
-  res.redirect("blogs")
+  res.render(index.ejs, {
+    title: "Server main page"
+  })
 });
 
 router.get('/blogs/:blogid', async (req, res, next) => {
