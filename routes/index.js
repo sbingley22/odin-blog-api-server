@@ -8,12 +8,17 @@ const { body, validationResult } = require("express-validator");
 //const asyncHandler = require("express-async-handler");
 
 router.get('/', async function(req, res, next) {
-  const blogs = await Blog.find({ published: true }).exec()
-  //res.json(blogs.map(blog => blog.toJSON({ virtuals: true })));
-  res.render("index", {
-    title: "Server main page",
-    blogs: blogs
-  })
+  try {
+    const blogs = await Blog.find().exec()
+    
+    res.render("index", {
+      title: "Server main page",
+      blogs: blogs
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500)
+  }
 });
 
 router.get('/blogs/:blogid', async (req, res, next) => {
